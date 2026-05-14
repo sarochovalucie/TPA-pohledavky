@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Správa pohledávek | TPA Czech Republic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green:      #1D9E75;
+  --green-dark: #0F6E56;
+  --green-deep: #07422F;
+  --green-pale: #E8F7F1;
+  --green-mid:  #A8DFC8;
+  --ink:        #111A15;
+  --ink-60:     rgba(17,26,21,0.6);
+  --ink-30:     rgba(17,26,21,0.3);
+  --cream:      #F7F5F0;
+  --white:      #FFFFFF;
+  --rule:       rgba(17,26,21,0.1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── UTILITIES ── */
+.serif { font-family: 'Playfair Display', Georgia, serif; }
+.em-green { color: var(--green); }
+.em-italic { font-style: italic; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 6%;
+  height: 60px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule);
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--green-dark); text-decoration: none;
+}
+.nav-cta {
+  background: var(--green); color: white;
+  padding: 9px 22px; border-radius: 100px;
+  font-size: 0.82rem; font-weight: 600;
+  text-decoration: none; letter-spacing: 0.01em;
+  transition: background .2s;
+}
+.nav-cta:hover { background: var(--green-dark); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 100px 6% 80px;
+  position: relative;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+/* decorative large circle */
+.hero::after {
+  content: '';
+  position: absolute;
+  right: -15vw; top: 50%;
+  transform: translateY(-50%);
+  width: 60vw; height: 60vw;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, var(--green-pale) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative; z-index: 2;
+  max-width: 760px;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--green-dark);
+  margin-bottom: 28px;
+}
+.hero-eyebrow::before {
+  content: ''; width: 28px; height: 2px; background: var(--green);
+}
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+  font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 32px;
+}
+
+.hero-body {
+  font-size: 1.1rem; line-height: 1.8;
+  color: var(--ink-60);
+  max-width: 580px;
+  margin-bottom: 48px;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: var(--green); color: white;
+  padding: 16px 36px; border-radius: 100px;
+  font-size: 0.95rem; font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 8px 28px rgba(29,158,117,.28);
+  transition: background .2s, transform .15s;
+  display: inline-block;
+}
+.btn-primary:hover { background: var(--green-dark); transform: translateY(-2px); }
+
+.btn-ghost {
+  color: var(--green-dark); font-weight: 500; font-size: 0.92rem;
+  text-decoration: none; display: flex; align-items: center; gap: 8px;
+  transition: gap .2s;
+}
+.btn-ghost:hover { gap: 14px; }
+.btn-ghost::after { content: '→'; font-size: 1rem; }
+
+/* ── SECTION BASE ── */
+.section { padding: 100px 6%; }
+.section-inner { max-width: 900px; margin: 0 auto; }
+.section-inner.wide { max-width: 1100px; }
+
+.tag {
+  display: inline-block;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--green-dark);
+  background: var(--green-pale);
+  padding: 5px 13px; border-radius: 100px;
+  margin-bottom: 20px;
+}
+
+h2.display {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 3.5vw, 2.9rem);
+  font-weight: 700; line-height: 1.18;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+
+.body-lg {
+  font-size: 1.05rem; line-height: 1.85;
+  color: var(--ink-60);
+}
+
+/* ── IDENTIFICATION ── */
+.identification { background: var(--white); }
+
+.ident-questions {
+  display: flex; flex-direction: column; gap: 0;
+  margin-top: 48px;
+  border: 1.5px solid var(--rule);
+  border-radius: 20px; overflow: hidden;
+}
+
+.ident-q {
+  display: flex; align-items: flex-start; gap: 20px;
+  padding: 28px 32px;
+  border-bottom: 1px solid var(--rule);
+  transition: background .2s;
+  cursor: default;
+}
+.ident-q:last-child { border-bottom: none; }
+.ident-q:hover { background: var(--green-pale); }
+
+.ident-q .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--green); flex-shrink: 0; margin-top: 7px;
+}
+
+.ident-q p {
+  font-size: 1.02rem; line-height: 1.65; color: var(--ink);
+}
+
+.ident-close {
+  margin-top: 40px;
+  font-size: 1.1rem;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: var(--green-dark);
+  border-left: 3px solid var(--green);
+  padding-left: 20px;
+}
+
+/* ── DESIRE ── */
+.desire { background: var(--green-deep); }
+.desire .tag { background: rgba(255,255,255,0.1); color: var(--green-mid); }
+.desire h2.display { color: white; }
+
+.desire-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2px;
+  margin-top: 52px;
+  border-radius: 16px; overflow: hidden;
+}
+
+.desire-card {
+  background: rgba(255,255,255,0.04);
+  padding: 32px 28px;
+  transition: background .2s;
+}
+.desire-card:hover { background: rgba(255,255,255,0.08); }
+
+.desire-card .icon {
+  font-size: 1.6rem; margin-bottom: 16px;
+}
+
+.desire-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; font-weight: 500;
+  color: white; margin-bottom: 10px; line-height: 1.3;
+}
+
+.desire-card p {
+  font-size: 0.88rem; line-height: 1.7;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ── PAIN ── */
+.pain { background: var(--cream); }
+
+.pain-list {
+  margin-top: 48px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.pain-item {
+  display: flex; align-items: flex-start; gap: 16px;
+  background: white;
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--green);
+  border-radius: 12px;
+  padding: 22px 24px;
+  font-size: 0.98rem; line-height: 1.65;
+  color: var(--ink);
+  transition: border-color .2s, transform .15s;
+}
+.pain-item:hover { border-left-color: var(--green-dark); transform: translateX(4px); }
+
+.pain-item .num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem; font-weight: 700; color: var(--green);
+  flex-shrink: 0; min-width: 28px;
+  margin-top: 1px;
+}
+
+.pain-bridge {
+  margin-top: 48px; padding: 32px 36px;
+  background: white;
+  border: 1.5px solid var(--green);
+  border-radius: 16px;
+}
+
+.pain-bridge p {
+  font-size: 1.05rem; line-height: 1.8; color: var(--ink);
+}
+
+.pain-bridge strong { color: var(--green-dark); }
+
+/* ── SOLUTION ── */
+.solution { background: var(--white); }
+
+.solution-intro {
+  font-size: 1.05rem; line-height: 1.8;
+  color: var(--ink-60);
+  max-width: 700px;
+  margin-bottom: 56px;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.service-card {
+  border: 1.5px solid var(--rule);
+  border-radius: 18px; padding: 32px;
+  transition: border-color .2s, transform .2s;
+  position: relative; overflow: hidden;
+}
+.service-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--green);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .3s;
+}
+.service-card:hover { border-color: var(--green); transform: translateY(-4px); }
+.service-card:hover::before { transform: scaleX(1); }
+
+.service-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem; font-weight: 600;
+  margin-bottom: 12px; line-height: 1.3;
+}
+
+.service-card p {
+  font-size: 0.88rem; line-height: 1.7;
+  color: var(--ink-60);
+}
+
+/* ── WHY TPA ── */
+.why { background: var(--green-deep); }
+.why .body-lg { color: rgba(255,255,255,0.55); }
+.why h2.display { color: white; }
+.why .tag { background: rgba(255,255,255,0.08); color: var(--green-mid); }
+
+.why-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  margin-top: 56px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 16px; overflow: hidden;
+}
+
+.why-stat {
+  background: var(--green-deep);
+  padding: 36px 28px;
+  text-align: center;
+}
+
+.why-stat .big {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.6rem; font-weight: 700;
+  color: var(--green-mid);
+  line-height: 1; margin-bottom: 8px;
+}
+
+.why-stat .label {
+  font-size: 0.82rem; color: rgba(255,255,255,0.45);
+  line-height: 1.5;
+}
+
+/* ── CONTACT SECTION ── */
+.contact-section { background: var(--cream); }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: start;
+}
+
+.contact-left h2.display { margin-bottom: 20px; }
+
+.contact-left .body-lg { margin-bottom: 40px; }
+
+.direct-contacts {
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+.direct-link {
+  display: flex; align-items: center; gap: 14px;
+  text-decoration: none;
+  padding: 16px 20px;
+  background: white; border: 1.5px solid var(--rule);
+  border-radius: 12px;
+  transition: border-color .2s, transform .15s;
+}
+.direct-link:hover { border-color: var(--green); transform: translateX(4px); }
+
+.direct-link .dl-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--green-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+
+.direct-link .dl-body { display: flex; flex-direction: column; }
+.direct-link .dl-label {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-60);
+  margin-bottom: 2px;
+}
+.direct-link .dl-value {
+  font-size: 0.95rem; font-weight: 500; color: var(--ink);
+}
+
+/* ── FORM ── */
+.form-card {
+  background: white;
+  border-radius: 24px; padding: 44px 40px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.07);
+  border: 1px solid var(--rule);
+}
+
+.form-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 700;
+  margin-bottom: 6px; color: var(--ink);
+}
+.form-sub {
+  font-size: 0.85rem; color: var(--ink-60);
+  margin-bottom: 32px; line-height: 1.5;
+}
+
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+
+.fg { margin-bottom: 16px; }
+.fg label {
+  display: block;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--ink-60);
+  margin-bottom: 6px;
+}
+
+.fg input, .fg select, .fg textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem; color: var(--ink);
+  background: white; outline: none;
+  transition: border-color .2s;
+  resize: none;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus {
+  border-color: var(--green);
+}
+.fg input::placeholder, .fg textarea::placeholder { color: var(--ink-30); }
+
+.fg textarea { height: 110px; }
+
+.submit-btn {
+  width: 100%;
+  background: var(--green); color: white; border: none;
+  padding: 16px; border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 600;
+  cursor: pointer; margin-top: 6px;
+  box-shadow: 0 8px 24px rgba(29,158,117,.28);
+  transition: background .2s, transform .15s;
+}
+.submit-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
+.submit-btn:disabled { background: var(--green-mid); transform: none; cursor: default; }
+
+.form-disclaimer {
+  margin-top: 12px; font-size: 0.73rem;
+  color: var(--ink-30); text-align: center; line-height: 1.5;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--ink);
+  padding: 36px 6%;
+  display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: 16px;
+}
+footer .f-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; color: var(--green-mid); text-decoration: none;
+}
+footer p { font-size: 0.78rem; color: rgba(255,255,255,0.35); }
+footer a { color: var(--green-mid); text-decoration: none; font-size: 0.78rem; }
+
+/* ── REVEAL ANIMATION ── */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity .65s ease, transform .65s ease;
+}
+.reveal.on { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+  .form-row { grid-template-columns: 1fr; }
+  .desire-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .section { padding: 72px 6%; }
+  .desire-grid { grid-template-columns: 1fr; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">tpa</a>
+  <a class="nav-cta" href="#kontakt">Napište nám</a>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Pohledávky &amp; správa závazků</div>
+    <h1 class="serif">
+      Platí vám zákazníci<br>
+      <em class="em-italic em-green">pozdě – nebo vůbec?</em>
+    </h1>
+    <p class="hero-body">
+      Víme, jak frustrující je fakturovat, čekat a připomínat – dokola.
+      Pokud hledáte jasno v pohledávkách a chcete systém, který funguje,
+      jste na správném místě.
+    </p>
+    <div class="hero-actions">
+      <a href="#kontakt" class="btn-primary">Poptat bezplatnou konzultaci</a>
+      <a href="#reseni" class="btn-ghost">Co řešíme</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     IDENTIFIKACE — „Jste to vy?"
+══════════════════════════════════════════ -->
+<section class="section identification">
+  <div class="section-inner reveal">
+    <span class="tag">Jste to vy?</span>
+    <h2 class="display serif">
+      Poznáváte se<br>v těchto situacích?
+    </h2>
+    <p class="body-lg">
+      Než si povíme cokoliv o nás, chceme se ujistit,
+      že mluvíme se správným člověkem.
+    </p>
+
+    <div class="ident-questions">
+      <div class="ident-q">
+        <div class="dot"></div>
+        <p>Vystavujete faktury včas, ale platby chodí týdny – někdy měsíce – po splatnosti. A vy mezitím musíte financovat provoz z vlastní kapsy.</p>
+      </div>
+      <div class="ident-q">
+        <div class="dot"></div>
+        <p>Máte na účtu dobré výsledky „na papíře", ale cashflow nekoresponduje – peníze prostě nejsou tam, kde by měly být.</p>
+      </div>
+      <div class="ident-q">
+        <div class="dot"></div>
+        <p>Nevíte přesně, kolik pohledávek je reálně dobytných a kolik z nich tiše odepisujete jako ztrátu – protože upomínkovat je nepříjemné.</p>
+      </div>
+      <div class="ident-q">
+        <div class="dot"></div>
+        <p>Připadáte si jako vymahač dluhů místo podnikatele. Místo rozvoje firmy řešíte, kdo ještě nezaplatil fakturu číslo 2024/047.</p>
+      </div>
+      <div class="ident-q">
+        <div class="dot"></div>
+        <p>Přišel audit nebo uzávěrka a najednou nikdo neví, jak přesně jsou opravné položky k pohledávkám spočítané a čím doložené.</p>
+      </div>
+      <div class="ident-q">
+        <div class="dot"></div>
+        <p>Pracujete s většími odběrateli, kteří si prostě diktují platební podmínky – a vy nemáte páku ani argumenty.</p>
+      </div>
+    </div>
+
+    <p class="ident-close reveal">
+      Pokud jste přikývli alespoň u jednom z těchto bodů – čtěte dál.
+      Tohle je přesně to, čím se zabýváme.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     TOUHA — „Chtěli byste…"
+══════════════════════════════════════════ -->
+<section class="section desire">
+  <div class="section-inner wide reveal">
+    <span class="tag">Jak by to mohlo vypadat</span>
+    <h2 class="display serif" style="color:white;">
+      Představte si, že vaše<br>pohledávky prostě <em class="em-italic" style="color:var(--green-mid);">fungují.</em>
+    </h2>
+
+    <div class="desire-grid">
+      <div class="desire-card">
+        <div class="icon">📅</div>
+        <h3>Platby přicházejí předvídatelně</h3>
+        <p>Víte, kdy co dorazí. Cashflow plánujete s klidem, ne s překvapením každý týden.</p>
+      </div>
+      <div class="desire-card">
+        <div class="icon">🔍</div>
+        <h3>Máte přehled v reálném čase</h3>
+        <p>Aging pohledávek, opravné položky, rizikoví odběratelé. Vše na jednom místě, kdykoliv si vzpomenete.</p>
+      </div>
+      <div class="desire-card">
+        <div class="icon">⚖️</div>
+        <h3>Audit proběhne bez překvapení</h3>
+        <p>Veškerá dokumentace je v pořádku. Auditor dostane přesně to, co potřebuje – bez hektického dohledávání.</p>
+      </div>
+      <div class="desire-card">
+        <div class="icon">🤝</div>
+        <h3>Odběratelé respektují vaše podmínky</h3>
+        <p>Máte nastavené procesy a smluvní záruky, které chrání vaši pozici – bez nutnosti osobně vymáhat každou fakturu.</p>
+      </div>
+      <div class="desire-card">
+        <div class="icon">🧘</div>
+        <h3>Věnujete se byznysu, ne dluhům</h3>
+        <p>Správa pohledávek je systematická záležitost, ne zdroj stresu. Vy se soustředíte na růst.</p>
+      </div>
+      <div class="desire-card">
+        <div class="icon">📊</div>
+        <h3>Čísla odpovídají realitě</h3>
+        <p>Rozvaha odráží skutečný stav. Víte, kolik vám skutečně dluží – a kolik z toho reálně dostanete.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     BOLEST — „Ale momentálně…"
+══════════════════════════════════════════ -->
+<section class="section pain">
+  <div class="section-inner reveal">
+    <span class="tag">Ale momentálně…</span>
+    <h2 class="display serif">
+      Realita v mnoha firmách<br>
+      <em class="em-italic em-green">vypadá jinak.</em>
+    </h2>
+    <p class="body-lg">
+      Nejste sami. Tohle jsou situace, které slýcháme od klientů
+      znova a znova – a které mají řešení.
+    </p>
+
+    <div class="pain-list">
+      <div class="pain-item reveal">
+        <span class="num">01</span>
+        <span>Pohledávky jsou v účetnictví, ale nikdo přesně neví, které z nich jsou reálně vymahatelné. Opravné položky jsou odhadem, ne analýzou.</span>
+      </div>
+      <div class="pain-item reveal">
+        <span class="num">02</span>
+        <span>Upomínky se posílají manuálně, nepravidelně, nebo vůbec. Závisí to na tom, kdo má dnes čas a chuť to udělat.</span>
+      </div>
+      <div class="pain-item reveal">
+        <span class="num">03</span>
+        <span>Přišel rok 2025 a najednou se ukázalo, že část pohledávek je promlčena. Mohly být odpočitatelné, ale termín utekl.</span>
+      </div>
+      <div class="pain-item reveal">
+        <span class="num">04</span>
+        <span>Saldokonto je plné křížových závazků, dobropisy neodpovídají fakturám a nikdo nemá čas to vyčistit před uzávěrkou.</span>
+      </div>
+      <div class="pain-item reveal">
+        <span class="num">05</span>
+        <span>Odběratelé v zahraničí platí v cizích měnách a kurzové rozdíly jsou v účetnictví naposledy přeceněné nevíte kdy.</span>
+      </div>
+    </div>
+
+    <div class="pain-bridge reveal">
+      <p>
+        Problém většinou není špatná vůle ani špatné zákazníky.
+        Problém je <strong>chybějící systém</strong> – jasná pravidla, procesy a dokumentace,
+        která pohledávky drží pod kontrolou.
+        A přesně s tím vám pomůžeme.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     ŘEŠENÍ — co konkrétně děláme
+══════════════════════════════════════════ -->
+<section class="section solution" id="reseni">
+  <div class="section-inner wide reveal">
+    <span class="tag">Co pro vás uděláme</span>
+    <h2 class="display serif">
+      Pohledávky od A do Z –<br>
+      <em class="em-italic em-green">bez zbytečné teorie.</em>
+    </h2>
+    <p class="solution-intro body-lg">
+      Nepřijdeme s obecnými radami. Podíváme se na váš konkrétní stav,
+      navrhneme systém a pomůžeme ho zavést – nebo ho přebereme sami.
+    </p>
+
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <h3 class="serif">Analýza a aging pohledávek</h3>
+        <p>Rozebereme vaše pohledávky podle doby po splatnosti, vyhodnotíme dobytnost a identifikujeme rizikové položky.</p>
+      </div>
+      <div class="service-card reveal">
+        <h3 class="serif">Opravné položky a daňová optimalizace</h3>
+        <p>Nastavíme správný algoritmus výpočtu opravných položek a dohlédneme, abyste neminuli zákonné lhůty pro daňový odpočet.</p>
+      </div>
+      <div class="service-card reveal">
+        <h3 class="serif">Přecenění v cizích měnách</h3>
+        <p>Pohledávky v EUR, USD nebo jiných měnách – správně přeceníme k rozvahovému dni a zaúčtujeme kurzové rozdíly.</p>
+      </div>
+      <div class="service-card reveal">
+        <h3 class="serif">Konfirmační dopisy a odsouhlasení</h3>
+        <p>Připravíme a odešleme konfirmační dopisy vašim největším dlužníkům a věřitelům – nezbytný podklad pro auditory.</p>
+      </div>
+      <div class="service-card reveal">
+        <h3 class="serif">Nastavení interních procesů</h3>
+        <p>Vytvoříme nebo upravíme interní směrnici pro správu pohledávek – od pravidel vystavování po eskalační protokol vymáhání.</p>
+      </div>
+      <div class="service-card reveal">
+        <h3 class="serif">Podpora při auditu</h3>
+        <p>Připravíme kompletní podklady pro auditora – aging, opravné položky, konfirmace, dokumentaci vymáhání. Bez stresu na poslední chvíli.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PROČ TPA
+══════════════════════════════════════════ -->
+<section class="section why">
+  <div class="section-inner wide reveal">
+    <span class="tag">Proč TPA</span>
+    <h2 class="display serif">
+      Více než 30 let v číslech,<br>
+      <em class="em-italic" style="color:var(--green-mid);">ne v obecných slibech.</em>
+    </h2>
+    <p class="body-lg">
+      TPA Czech Republic poskytuje audit, daňové a účetní poradenství od roku 1993.
+      Jsme součástí mezinárodní sítě Baker Tilly – Top 10 globálně.
+      Lokálně dostupní, mezinárodně propojení.
+    </p>
+
+    <div class="why-stats">
+      <div class="why-stat">
+        <div class="big">1993</div>
+        <div class="label">rok vzniku v&nbsp;České republice</div>
+      </div>
+      <div class="why-stat">
+        <div class="big">300+</div>
+        <div class="label">odborníků v&nbsp;ČR</div>
+      </div>
+      <div class="why-stat">
+        <div class="big">12</div>
+        <div class="label">zemí CEE &amp; SEE ve skupině</div>
+      </div>
+      <div class="why-stat">
+        <div class="big">Top 10</div>
+        <div class="label">globální síť Baker Tilly</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     KONTAKT + FORMULÁŘ
+══════════════════════════════════════════ -->
+<section class="section contact-section" id="kontakt">
+  <div class="section-inner wide">
+    <div class="contact-grid">
+
+      <!-- LEFT: texty + přímý kontakt -->
+      <div class="reveal">
+        <span class="tag">Pojďme si promluvit</span>
+        <h2 class="display serif">
+          Napište nám, co<br>
+          <em class="em-italic em-green">potřebujete vyřešit.</em>
+        </h2>
+        <p class="body-lg">
+          Bez závazků. Stačí nám říct, kde se teď nacházíte a co vás trápí.
+          Ozveme se do jednoho pracovního dne a navrhneme konkrétní postup.
+        </p>
+
+        <div class="direct-contacts" style="margin-top: 36px;">
+          <a class="direct-link" href="tel:+420222826311">
+            <div class="dl-icon">📞</div>
+            <div class="dl-body">
+              <span class="dl-label">Telefon</span>
+              <span class="dl-value">+420 222 826 311</span>
+            </div>
+          </a>
+          <a class="direct-link" href="mailto:office@tpa-group.cz">
+            <div class="dl-icon">✉️</div>
+            <div class="dl-body">
+              <span class="dl-label">E-mail</span>
+              <span class="dl-value">office@tpa-group.cz</span>
+            </div>
+          </a>
+          <a class="direct-link" href="https://maps.google.com/?q=Antala+Staška+2027/79+Praha+4" target="_blank">
+            <div class="dl-icon">📍</div>
+            <div class="dl-body">
+              <span class="dl-label">Adresa</span>
+              <span class="dl-value">Antala Staška 2027/79, Praha 4</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT: formulář -->
+      <div class="form-card reveal">
+        <h3 class="serif">Poptávkový formulář</h3>
+        <p class="form-sub">Vyplňte prosím – co nejkonkrétnější popis nám pomůže připravit se na schůzku.</p>
+
+        <div class="form-row">
+          <div class="fg">
+            <label>Jméno *</label>
+            <input type="text" placeholder="Jana Nováková">
+          </div>
+          <div class="fg">
+            <label>Příjmení *</label>
+            <input type="text" placeholder="Nováková">
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Firemní e-mail *</label>
+          <input type="email" placeholder="jana.novakova@firma.cz">
+        </div>
+
+        <div class="form-row">
+          <div class="fg">
+            <label>Telefon</label>
+            <input type="tel" placeholder="+420 600 000 000">
+          </div>
+          <div class="fg">
+            <label>Název společnosti</label>
+            <input type="text" placeholder="ABC s.r.o.">
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Co potřebujete řešit? *</label>
+          <select>
+            <option value="">Vyberte oblast...</option>
+            <option>Analýza a aging pohledávek</option>
+            <option>Opravné položky k pohledávkám</option>
+            <option>Přecenění v cizích měnách</option>
+            <option>Konfirmační dopisy pro audit</option>
+            <option>Nastavení interních procesů</option>
+            <option>Podpora při auditu</option>
+            <option>Komplexní správa pohledávek</option>
+            <option>Jiné / nevím přesně, potřebuji konzultaci</option>
+          </select>
+        </div>
+
+        <div class="fg">
+          <label>Stručně popište situaci</label>
+          <textarea placeholder="Např. máme cca 40 odběratelů, část pravidelně platí pozdě, nevíme jak nastavit opravné položky před uzávěrkou…"></textarea>
+        </div>
+
+        <div class="fg">
+          <label>Jak jste se o nás dozvěděli?</label>
+          <select>
+            <option value="">Vyberte...</option>
+            <option>Doporučení od kolegy / známého</option>
+            <option>Vyhledávač (Google apod.)</option>
+            <option>LinkedIn</option>
+            <option>Webinář TPA</option>
+            <option>Ebook / materiál TPA</option>
+            <option>Newsletter TPA</option>
+            <option>Odborný článek / média</option>
+            <option>Jiné</option>
+          </select>
+        </div>
+
+        <button class="submit-btn" onclick="handleSubmit(this)">Odeslat poptávku →</button>
+        <p class="form-disclaimer">Vaše údaje jsou v bezpečí. Ozveme se do 1 pracovního dne.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a class="f-logo" href="#">tpa</a>
+  <p>TPA Czech Republic · <a href="tel:+420222826311">+420 222 826 311</a> · <a href="mailto:office@tpa-group.cz">office@tpa-group.cz</a></p>
+  <p>© 2026 TPA Czech Republic. Člen Baker Tilly International.</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Form submit
+  function handleSubmit(btn) {
+    btn.textContent = '✓ Poptávka odeslána – ozveme se do 1 dne';
+    btn.disabled = true;
+    btn.style.background = 'var(--green-deep)';
+  }
+</script>
+</body>
+</html>
